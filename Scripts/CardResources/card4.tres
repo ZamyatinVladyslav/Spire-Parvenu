@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://b2b8rbgxcvsgr"]
+
+[ext_resource type="Script" uid="uid://ce72p5k7u2h3u" path="res://Scripts/Resources/CardData.gd" id="1_f107d"]
+[ext_resource type="Texture2D" uid="uid://bgp3jfyhcg6" path="res://Sprites/Temp/spire_wip_temp.png" id="1_vmp3p"]
+
+[resource]
+script = ExtResource("1_f107d")
+card_name = "Card 4"
+card_description = "4"
+image = ExtResource("1_vmp3p")
+metadata/_custom_type_script = "uid://ce72p5k7u2h3u"

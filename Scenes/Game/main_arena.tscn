@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://db8gt8ha3c2o"]
+
+[ext_resource type="PackedScene" uid="uid://31wgit074xgw" path="res://Scenes/Player/card.tscn" id="1_kr0cy"]
+
+[sub_resource type="GDScript" id="GDScript_tsx58"]
+resource_name = "HandManager"
+script/source = "extends Node
+
+
+@export var card_scene: PackedScene
+@onready var hand_container = $\"../UI/PlayerHand\"
+
+var all_cards: Array[CardData] = []
+
+func _ready():
+	randomize()
+	
+	#Adding cards for checking the script
+	var card1 = load(\"res://Scripts/CardResources/card1.tres\")
+	var card2 = load(\"res://Scripts/CardResources/card2.tres\")
+	var card3 = load(\"res://Scripts/CardResources/card3.tres\")
+	var card4 = load(\"res://Scripts/CardResources/card4.tres\")
+	var card5 = load(\"res://Scripts/CardResources/card5.tres\")
+	var card6 = load(\"res://Scripts/CardResources/card6.tres\")
+	var card7 = load(\"res://Scripts/CardResources/card7.tres\")
+	all_cards.append(card1)
+	all_cards.append(card1)
+	all_cards.append(card1)
+	all_cards.append(card2)
+	all_cards.append(card2)
+	all_cards.append(card3)
+	all_cards.append(card3)
+	all_cards.append(card3)
+	all_cards.append(card3)
+	all_cards.append(card4)
+	all_cards.append(card5)
+	all_cards.append(card6)
+	all_cards.append(card7)
+	#----------------
+	
+	draw_cards(5)
+
+func draw_cards(count: int):
+	var deck = all_cards.duplicate()
+	deck.shuffle()
+	
+	for i in range(count):
+		if deck.is_empty(): break
+		
+		var data = deck.pop_back()
+		create_card_ui(data)
+
+func create_card_ui(data: CardData):
+	var card_wrapper = Control.new() # Создаем \"пустышку\" для контейнера
+	card_wrapper.custom_minimum_size = Vector2(130, 300) # Размер вашей карты
+	var new_card = card_scene.instantiate()
+	hand_container.add_child(card_wrapper)
+	card_wrapper.add_child(new_card) # Добавляем карту внутрь пустышки
+	new_card.setup(data)
+"
+
+[node name="MainArena" type="Node2D" unique_id=1354051289]
+
+[node name="HandManager" type="Node" parent="." unique_id=1369035857]
+script = SubResource("GDScript_tsx58")
+card_scene = ExtResource("1_kr0cy")
+
+[node name="UI" type="Control" parent="." unique_id=1269927749]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PlayerHand" type="HBoxContainer" parent="UI" unique_id=767298770]
+layout_mode = 0
+offset_left = 515.0
+offset_top = 518.0
+offset_right = 1129.0
+offset_bottom = 632.0
