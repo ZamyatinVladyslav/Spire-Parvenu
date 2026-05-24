@@ -43,6 +43,8 @@ func start_battle():
 	draw_cards(5)
 
 func draw_cards(count: int):
+	print(\"Info: Cards in draw pile - \", draw_pile.size())
+	print(\"Info: Cards in discard pile - \", discard_pile.size())
 	for i in range(count):
 		# From discard to draw pile
 		if draw_pile.is_empty():
@@ -59,6 +61,7 @@ func draw_cards(count: int):
 		create_card_ui(card_data)
 
 func reshuffle_discard_into_draw():
+	print(\"Act: Draw pile is empty, reshuffling\")
 	if discard_pile.is_empty():
 		return
 		
@@ -83,7 +86,12 @@ func discard_hand():
 		
 	discard_pile.append_array(hand_pile)
 	hand_pile.clear()
-	print(\"Рука сброшена. В сбросе сейчас карт: \", discard_pile.size())
+	print(\"Act: Cards discarded\")
+
+
+func _on_button_pressed() -> void:
+	discard_hand()
+	draw_cards(5)
 "
 
 [node name="MainArena" type="Node2D" unique_id=1354051289]
@@ -104,3 +112,13 @@ offset_left = 273.0
 offset_top = 505.0
 offset_right = 887.0
 offset_bottom = 619.0
+
+[node name="Button" type="Button" parent="UI" unique_id=1293156624]
+layout_mode = 0
+offset_left = 855.0
+offset_top = 123.0
+offset_right = 1046.0
+offset_bottom = 160.0
+text = "Test: Discard cards"
+
+[connection signal="pressed" from="UI/Button" to="HandManager" method="_on_button_pressed"]
