@@ -12,6 +12,10 @@ script/source = "extends Node
 
 var all_cards: Array[CardData] = []
 
+var draw_pile: Array[CardData] = []
+var hand_pile: Array[CardData] = []
+var discard_pile: Array[CardData] = []
+
 func _ready():
 	randomize()
 	
@@ -23,40 +27,63 @@ func _ready():
 	var card5 = load(\"res://Scripts/CardResources/card5.tres\")
 	var card6 = load(\"res://Scripts/CardResources/card6.tres\")
 	var card7 = load(\"res://Scripts/CardResources/card7.tres\")
-	all_cards.append(card1)
-	all_cards.append(card1)
-	all_cards.append(card1)
-	all_cards.append(card2)
-	all_cards.append(card2)
-	all_cards.append(card3)
-	all_cards.append(card3)
-	all_cards.append(card3)
-	all_cards.append(card3)
-	all_cards.append(card4)
-	all_cards.append(card5)
-	all_cards.append(card6)
-	all_cards.append(card7)
+	all_cards.append_array([card1, card1, card1, card2, card2, card3, card3, card3, card3, card4, card5, card6, card7])
 	#----------------
+	
+	start_battle()
+
+func start_battle():
+	draw_pile.clear()
+	hand_pile.clear()
+	discard_pile.clear()
+	
+	draw_pile = all_cards.duplicate()
+	draw_pile.shuffle()
 	
 	draw_cards(5)
 
 func draw_cards(count: int):
-	var deck = all_cards.duplicate()
-	deck.shuffle()
-	
 	for i in range(count):
-		if deck.is_empty(): break
+		# From discard to draw pile
+		if draw_pile.is_empty():
+			reshuffle_discard_into_draw()
 		
-		var data = deck.pop_back()
-		create_card_ui(data)
+		# If not enough cards
+		if draw_pile.is_empty():
+			break
+		
+		# Drawing card
+		var card_data = draw_pile.pop_back()
+		hand_pile.append(card_data)
+		
+		create_card_ui(card_data)
+
+func reshuffle_discard_into_draw():
+	if discard_pile.is_empty():
+		return
+		
+	draw_pile = discard_pile.duplicate()
+	draw_pile.shuffle()
+	discard_pile.clear()
 
 func create_card_ui(data: CardData):
-	var card_wrapper = Control.new() # Создаем \"пустышку\" для контейнера
-	card_wrapper.custom_minimum_size = Vector2(130, 300) # Размер вашей карты
+	var card_wrapper = Control.new()
+	card_wrapper.custom_minimum_size = Vector2(130, 300)
+	
+	card_wrapper.name = \"Card_\" + data.resource_path.get_file().get_basename()
+	
 	var new_card = card_scene.instantiate()
 	hand_container.add_child(card_wrapper)
-	card_wrapper.add_child(new_card) # Добавляем карту внутрь пустышки
+	card_wrapper.add_child(new_card)
 	new_card.setup(data)
+
+func discard_hand():
+	for child in hand_container.get_children():
+		child.queue_free()
+		
+	discard_pile.append_array(hand_pile)
+	hand_pile.clear()
+	print(\"Рука сброшена. В сбросе сейчас карт: \", discard_pile.size())
 "
 
 [node name="MainArena" type="Node2D" unique_id=1354051289]
@@ -73,7 +100,7 @@ offset_bottom = 40.0
 
 [node name="PlayerHand" type="HBoxContainer" parent="UI" unique_id=767298770]
 layout_mode = 0
-offset_left = 515.0
-offset_top = 518.0
-offset_right = 1129.0
-offset_bottom = 632.0
+offset_left = 273.0
+offset_top = 505.0
+offset_right = 887.0
+offset_bottom = 619.0
