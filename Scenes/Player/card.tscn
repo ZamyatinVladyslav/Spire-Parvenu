@@ -29,6 +29,7 @@ func _apply_data():
 "
 
 [node name="Card" type="Node2D" unique_id=1373466075]
+position = Vector2(66, 86)
 scale = Vector2(0.11810209, 0.11810209)
 script = SubResource("GDScript_au3t3")
 
