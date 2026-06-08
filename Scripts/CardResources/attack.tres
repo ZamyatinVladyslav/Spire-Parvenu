@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://dc0m5wl00pt3v"]
+
+[ext_resource type="Script" uid="uid://duh53knw463gr" path="res://Scripts/Effects/CardEffect.gd" id="1_o0qip"]
+[ext_resource type="Script" uid="uid://be0dgydqpavu0" path="res://Scripts/Effects/DamageEffect.gd" id="2_ebhra"]
+[ext_resource type="Script" uid="uid://ce72p5k7u2h3u" path="res://Scripts/Resources/CardData.gd" id="3_q6knn"]
+
+[sub_resource type="Resource" id="Resource_vnxh0"]
+script = ExtResource("2_ebhra")
+damage_value = 10
+metadata/_custom_type_script = "uid://be0dgydqpavu0"
+
+[resource]
+script = ExtResource("3_q6knn")
+card_name = "attack"
+card_description = "attack for 10 damage"
+effects = Array[ExtResource("1_o0qip")]([SubResource("Resource_vnxh0")])
+metadata/_custom_type_script = "uid://ce72p5k7u2h3u"

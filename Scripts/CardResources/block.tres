@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://4q225vlmm44o"]
+
+[ext_resource type="Script" uid="uid://duh53knw463gr" path="res://Scripts/Effects/CardEffect.gd" id="1_p65p1"]
+[ext_resource type="Script" uid="uid://ce72p5k7u2h3u" path="res://Scripts/Resources/CardData.gd" id="2_hfwpq"]
+[ext_resource type="Script" uid="uid://b2fot8l6amjae" path="res://Scripts/Effects/BlockEffect.gd" id="2_htr45"]
+
+[sub_resource type="Resource" id="Resource_rowmy"]
+script = ExtResource("2_htr45")
+block_value = 10
+metadata/_custom_type_script = "uid://b2fot8l6amjae"
+
+[resource]
+script = ExtResource("2_hfwpq")
+card_name = "block"
+card_description = "add 10 shield"
+effects = Array[ExtResource("1_p65p1")]([SubResource("Resource_rowmy")])
+target_type = 1
+metadata/_custom_type_script = "uid://ce72p5k7u2h3u"

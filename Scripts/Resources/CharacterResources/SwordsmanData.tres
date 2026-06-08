@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://bneu041tkjbbd"]
+
+[ext_resource type="Script" uid="uid://dvicfjuq4wgi3" path="res://Scripts/EntityScripts/CharacterData.gd" id="1_w8t4y"]
+[ext_resource type="Script" uid="uid://ce72p5k7u2h3u" path="res://Scripts/Resources/CardData.gd" id="2_gpm43"]
+[ext_resource type="Resource" uid="uid://dc0m5wl00pt3v" path="res://Scripts/CardResources/attack.tres" id="3_gpm43"]
+[ext_resource type="Resource" uid="uid://4q225vlmm44o" path="res://Scripts/CardResources/block.tres" id="4_y87gl"]
+
+[resource]
+script = ExtResource("1_w8t4y")
+starting_deck = Array[ExtResource("2_gpm43")]([ExtResource("3_gpm43"), ExtResource("4_y87gl"), ExtResource("3_gpm43"), ExtResource("3_gpm43"), ExtResource("4_y87gl"), ExtResource("3_gpm43"), ExtResource("4_y87gl"), ExtResource("3_gpm43"), ExtResource("3_gpm43")])
+name = "Swordsman"
+max_hp = 100
+metadata/_custom_type_script = "uid://dvicfjuq4wgi3"
