@@ -17,8 +17,8 @@ config/icon="res://icon.svg"
 
 [global_group]
 
-player=""
-enemy=""
+players=""
+enemies=""
 
 [physics]
 

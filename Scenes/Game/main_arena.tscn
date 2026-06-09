@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://31wgit074xgw" path="res://Scenes/Player/card.tscn" id="1_kr0cy"]
 [ext_resource type="PackedScene" uid="uid://ckmv4wpkhvjx0" path="res://Scenes/Entites/swordsman.tscn" id="2_xmdf3"]
+[ext_resource type="PackedScene" uid="uid://f60euball18e" path="res://Scenes/Entites/enemy_temp.tscn" id="3_2t8in"]
 
 [sub_resource type="GDScript" id="GDScript_tsx58"]
 resource_name = "HandManager"
@@ -12,6 +13,8 @@ script/source = "extends Node
 @onready var hand_container = $\"../UI/PlayerHand\"
 
 @export var character_node: Character
+
+@export var enemy_node: Enemy
 
 var dragged_card_node: Node2D 
 var dragged_card_data: CardData 
@@ -31,11 +34,13 @@ func _ready():
 	randomize()
 	
 	if character_node and character_node.character_data:
-		# Копируем стартовую колоду ИМЕННО ЭТОГО персонажа
-		all_cards = character_node.character_data.starting_deck.duplicate()
-		print(\"Loaded deck: \", character_node.character_data.name, \". Cards: \", all_cards.size())
+		all_cards.clear()
+		for card_resource in character_node.character_data.starting_deck:
+			if card_resource:
+				all_cards.append(card_resource.duplicate())
+				
 	else:
-		push_error(\"Err: Character not found\")
+		push_error(\"Err: No player data\")
 	
 	start_battle()
 
@@ -91,14 +96,11 @@ func create_card_ui(data: CardData):
 	card_wrapper.gui_input.connect(_on_wrapper_input.bind(new_card, data))
 
 func _on_card_selected(card_node: Node2D, card_data: CardData):
-	# Пытаемся добавить карту в очередь
 	var success = try_to_queue_card(card_data, card_node)
 	
 	if success:
-		# Визуальный эффект: например, сдвигаем карту чуть вверх 
-		# или делаем полупрозрачной, показывая, что она \"выбрана\"
 		card_node.position.y -= 50
-		card_node.modulate = Color(0.7, 0.9, 1.0) # Слегка подсиним её
+		card_node.modulate = Color(0.7, 0.9, 1.0)
 
 func check_target_under_mouse():
 	var mouse_pos = hand_container.get_global_mouse_position()
@@ -113,11 +115,11 @@ func check_target_under_mouse():
 	var target_found = false
 	
 	for result in results:
+		print(result)
 		var area = result.collider as Area2D
 		if area:
 			var entity = area.get_parent() as Entity
 			
-			# Умная проверка на основе TargetType из самого ресурса карты!
 			if dragged_card_data.target_type == CardData.TargetType.ENEMY and entity.is_in_group(\"enemies\"):
 				confirm_card_selection(entity)
 				target_found = true
@@ -131,7 +133,6 @@ func check_target_under_mouse():
 		return_card_to_hand()
 
 func confirm_card_selection(target_entity: Entity):
-	# Сохраняем в очередь и карту, и того, на кого её навели
 	action_queue.append({
 		\"card_data\": dragged_card_data,
 		\"target\": target_entity
@@ -143,7 +144,6 @@ func confirm_card_selection(target_entity: Entity):
 	clear_drag_variables()
 
 func return_card_to_hand():
-	# Анимируем плавное возвращение карты на её законное место в руке
 	var tween = create_tween()
 	tween.tween_property(dragged_card_node, \"position\", original_card_position, 0.15).set_trans(Tween.TRANS_QUAD)
 	clear_drag_variables()
@@ -153,12 +153,14 @@ func clear_drag_variables():
 	dragged_card_data = null
 
 func _on_wrapper_input(event: InputEvent, card_node: Node2D, card_data: CardData):
-	# 1. Нажатие мыши — начинаем тащить
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
-			# Проверяем, не полная ли очередь и подходят ли условия
 			if action_queue.size() >= MAX_QUEUE_SIZE:
 				return
+			
+			for action in action_queue:
+				if action[\"card_data\"] == card_data:
+					return
 			
 			var already_in_queue = false
 			for action in action_queue:
@@ -167,24 +169,19 @@ func _on_wrapper_input(event: InputEvent, card_node: Node2D, card_data: CardData
 					break
 			
 			if not card_data.can_be_played(self):
-				print(\"Нельзя сыграть эту карту!\")
 				return
 				
 			dragged_card_node = card_node
 			dragged_card_data = card_data
-			original_card_position = card_node.position # Запоминаем исходное место в руке
+			original_card_position = card_node.position
 			is_dragging = true
 			
-		# 2. Отпускание мыши — проверяем, куда навели
 		elif not event.pressed and is_dragging:
 			is_dragging = false
 			check_target_under_mouse()
 
 func _process(_delta):
-	# Если мы тащим карту, заставляем её Node2D следовать за глобальным курсором
 	if is_dragging and dragged_card_node:
-		# Так как Node2D находится внутри Control, нам нужно перевести глобальные координаты мыши 
-		# в локальные координаты родительского wrapper'а
 		dragged_card_node.global_position = dragged_card_node.get_global_mouse_position()
 
 func discard_hand():
@@ -192,7 +189,9 @@ func discard_hand():
 		child.queue_free()
 		
 	discard_pile.append_array(hand_pile)
-	discard_pile.append_array(action_queue)
+	for action in action_queue:
+		var card = action[\"card_data\"] as CardData
+		discard_pile.append(card)
 	hand_pile.clear()
 	action_queue.clear()
 	print(\"Act: Cards discarded\")
@@ -211,10 +210,8 @@ func try_to_queue_card(card_data: CardData, card_node: Node2D) -> bool:
 		print(\"INFO: Card cant be played \", card_data.card_name, \" (Возможно, мало энергии)\")
 		return false
 	
-	# Добавляем данные в очередь
 	action_queue.append(card_data)
 	
-	# Удаляем карту из руки в коде, чтобы она не ушла в сброс дважды
 	hand_pile.erase(card_data)
 	
 	print(\"Info: card added in position: \", action_queue.size(), \"/\", MAX_QUEUE_SIZE)
@@ -222,22 +219,21 @@ func try_to_queue_card(card_data: CardData, card_node: Node2D) -> bool:
 
 func _on_button_pressed() -> void:
 	if not action_queue.is_empty():
-		print(\"--- НАЧАЛО ОТЫГРЫША КАРТ ИГРОКА ---\")
+		print(\"--- ACTION ---\")
 		
 		for action in action_queue:
 			var card = action[\"card_data\"] as CardData
 			var target = action[\"target\"] as Entity
 			
-			# Карта сама выполняет свои эффекты! 
-			# В качестве того, кто разыграл (user), передаем нашего игрока.
 			card.play(character_node, target)
 			
-		print(\"--- КОНЕЦ ОТЫГРЫША КАРТ ИГРОКА ---\")
 	
-	# NOT IMPLEMENTED
-	#if enemy_node and enemy_node.current_hp > 0:
-		#print(\"--- ХОД ВРАГА ---\")
-		#enemy_node.take_turn(player_node)
+	if enemy_node and enemy_node.current_hp > 0:
+		print(\"--- ENEMY TURN ---\")
+		enemy_node.take_turn(character_node)
+	
+	if character_node:
+		character_node.clear_block()
 	
 	discard_hand()
 	draw_cards(5)
@@ -245,10 +241,11 @@ func _on_button_pressed() -> void:
 
 [node name="MainArena" type="Node2D" unique_id=1354051289]
 
-[node name="HandManager" type="Node" parent="." unique_id=1369035857 node_paths=PackedStringArray("character_node")]
+[node name="HandManager" type="Node" parent="." unique_id=1369035857 node_paths=PackedStringArray("character_node", "enemy_node")]
 script = SubResource("GDScript_tsx58")
 card_scene = ExtResource("1_kr0cy")
 character_node = NodePath("../Swordsman")
+enemy_node = NodePath("../enemy_temp")
 
 [node name="UI" type="Control" parent="." unique_id=1269927749]
 layout_mode = 3
@@ -271,8 +268,12 @@ offset_right = 1046.0
 offset_bottom = 160.0
 text = "Test: Discard cards"
 
-[node name="Swordsman" parent="." unique_id=866064999 groups=["player"] instance=ExtResource("2_xmdf3")]
+[node name="Swordsman" parent="." unique_id=866064999 instance=ExtResource("2_xmdf3")]
 position = Vector2(220, 238)
 scale = Vector2(0.26416016, 0.26416016)
+
+[node name="enemy_temp" parent="." unique_id=349487624 instance=ExtResource("3_2t8in")]
+position = Vector2(716, 256)
+scale = Vector2(0.32, 0.32)
 
 [connection signal="pressed" from="UI/Button" to="HandManager" method="_on_button_pressed"]

@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://f60euball18e"]
+
+[ext_resource type="Texture2D" uid="uid://dk1k74t13t01b" path="res://Sprites/Temp/enemy_temp.png" id="1_r5hs7"]
+[ext_resource type="Script" uid="uid://jjnafbk0nyf7" path="res://Scripts/EntityScripts/Enemy.gd" id="2_qst6i"]
+[ext_resource type="Resource" uid="uid://b4umsturrsjwv" path="res://Scripts/Resources/EnemyResources/EnemyTemp.tres" id="3_xd2pr"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u0e2i"]
+atlas = ExtResource("1_r5hs7")
+region = Rect2(0, 0, 1024, 1024)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_qst6i"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u0e2i")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xd2pr"]
+size = Vector2(653, 615)
+
+[node name="enemy_temp" type="AnimatedSprite2D" unique_id=349487624 groups=["enemies"]]
+sprite_frames = SubResource("SpriteFrames_qst6i")
+script = ExtResource("2_qst6i")
+enemy_data = ExtResource("3_xd2pr")
+data = ExtResource("3_xd2pr")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1197711627 groups=["enemies"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1688801210 groups=["enemies"]]
+position = Vector2(13.5, -36.5)
+shape = SubResource("RectangleShape2D_xd2pr")
+
+[node name="Health" type="Sprite2D" parent="." unique_id=1098382459]
+position = Vector2(-240, -295)
+
+[node name="Label" type="Label" parent="Health" unique_id=2070620678]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 36
+text = "0"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Armor" type="Sprite2D" parent="." unique_id=2084717286]
+position = Vector2(-297, -244)
+
+[node name="Label" type="Label" parent="Armor" unique_id=1273625281]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 36
+text = "0"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=794121008]
+offset_left = -263.0
+offset_top = 398.0
+offset_right = -223.0
+offset_bottom = 438.0
+scale = Vector2(13.239998, 2.56)
+
+[node name="Intent" type="Sprite2D" parent="." unique_id=392217989]
+position = Vector2(-8, -446)
+
+[node name="Label" type="Label" parent="Intent" unique_id=436143555]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 36
+text = "0"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true

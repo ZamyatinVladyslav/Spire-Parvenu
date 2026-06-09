@@ -45,7 +45,6 @@ func take_damage(amount: int):
 	current_hp = max(0, current_hp - amount)
 	update_ui()
 	
-	#print(data.name, " получил урон. HP: ", current_hp)
 	
 	if current_hp <= 0:
 		die()

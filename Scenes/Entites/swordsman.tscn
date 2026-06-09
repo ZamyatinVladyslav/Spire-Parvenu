@@ -127,7 +127,7 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d0k4j"]
 size = Vector2(783, 824)
 
-[node name="Swordsman" type="AnimatedSprite2D" unique_id=866064999 groups=["player"]]
+[node name="Swordsman" type="AnimatedSprite2D" unique_id=866064999 groups=["players"]]
 sprite_frames = SubResource("SpriteFrames_yaa8n")
 animation = &"Idle"
 autoplay = "Idle"
@@ -135,9 +135,9 @@ script = ExtResource("2_12762")
 character_data = ExtResource("3_iroob")
 data = ExtResource("3_iroob")
 
-[node name="Area2D" type="Area2D" parent="." unique_id=870574322]
+[node name="Area2D" type="Area2D" parent="." unique_id=870574322 groups=["players"]]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=34000429]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=34000429 groups=["players"]]
 position = Vector2(54.5, -1)
 shape = SubResource("RectangleShape2D_d0k4j")
 
